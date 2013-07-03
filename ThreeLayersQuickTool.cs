@@ -3,6 +3,7 @@
 //Brook 2013-6-28 17:19 Modify for extension getitem of DAL
 //Brook 2013-7-1 17:29 Modify for extension dal 
 //Brook 2013-7-2 16:48 Modify for extension dal
+//Brook 2013-7-3 11:43 Finished for extension bll
 
 using System;
 using System.Collections.Generic;
@@ -443,7 +444,14 @@ namespace workTools
             result += "             Models." + metaName + "Model tempM=new Models." + metaName + "Model();\t" ;
             foreach (DataModel column in ColumnList)
             {
-                result += "             result."+resultInstance+"=sr[\""+column.ColumnName+"\"].ToString();\t";
+                if (TSQL.IsTypeStringable(column.ColumnType))
+                {
+                    result += "             tempM." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString();\t";
+                }
+                else
+                {
+                    result += "             tempM." + column.ColumnName + "="+ParseSqlTypeIntoCSharpType(column.ColumnType)+".Parse(sr[\""+column.ColumnName+"\"].ToString());\t" ;
+                }
             }
             result+= "          );\t";//param end
             result += "             " + resultInstance + ".Add(tempM);\t";
@@ -458,6 +466,86 @@ namespace workTools
         public string CreateCSharpBLL(List<DataModel> ColumnList)
         {
             string result = "";
+            string InstanceName = "instanceM";
+            result += "using System;\t";
+            result += "using System.Collections.Generic;\t";
+            result += "using System.Text;\t";
+            result += "using System.Data;\t";
+            result += "using System.Data.SqlClient;\t";
+            result += "using "+getNameSpace(projName,"Model")+"."+metaName+"Model;\t";
+            result += "using "+getNameSpace(projName,"DAL")+"."+metaName+"DAL;\t";
+            result += "namespace " + TSQL.getNameSpace(TSQL.projName, "BLL") + "\t";
+            result += "{\t";//namespace start
+
+            foreach(DataModel column in ColumnList)
+            {
+                if(column.IsPrimaryKey)
+                {
+                    
+                }
+            }
+
+            result += "     public int "+procCName+"(Models."+metaName+"Model "+InstanceName+")\t";
+            result += "     {\t";//method start
+            result += "         int result=0;\t";
+            result += "         "+getNameSpace(projName,"DAL")+"."+metaName+"DAL dal=new "+getNameSpace(projName,"DAL")+"."+metaName+"DAL();\t";
+            result+="           result=dal."+procCName+"("+InstanceName+");\t";
+            result += "         return result;\t";
+            result += "     }\t";//method end
+
+            
+            foreach(DataModel column in ColumnList)
+            {
+                if(column.IsPrimaryKey)
+                {
+                    result += "     public int "+procDName+"("+column.ColumnType+" "+column.ColumnName+")\t";
+                }
+            }
+
+            result += "     {\t";//method start
+            result += "         int result=0;\t";
+            foreach(DataModel column in ColumnList)
+            {
+                if(column.IsPrimaryKey)
+                {
+                    result += "         result=dal."+procDName+"("+column.ColumnName+");\t";
+                }
+            }
+            result += "     }\t";//method end
+
+            result += "     public int "+procUName+"(Models."+metaName+"Model "+InstanceName+")\t";
+            result += "     {\t";//method start
+            result += "         int result=0;\t";
+            result += "         "+getNameSpace(projName,"DAL")+"."+metaName+"DAL dal=new "+getNameSpace(projName,"DAL")+"();\t";
+            result += "         result=dal."+procUName+"("+InstanceName+");\t";
+            result += "         return result;\t";
+            result += "     }\t";//method end
+
+            string refName = "";
+            foreach (DataModel column in ColumnList)
+            {
+                if (column.IsPrimaryKey)
+                {
+                    refName = column.ColumnName;
+                    result += "     public Model." + metaName + "Model " + procRName + "("+ParseSqlTypeIntoCSharpType(column.ColumnType)+" "+column.ColumnName+");\t";
+                }
+            }
+            result += "     {\t";//method start
+            result += "         Model."+metaName+"Model result=new Model."+metaName+"Model();\t";
+            result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
+            result += "         result=dal."+procRName+"("+refName+");\t";
+            result += "         return result;\t";
+            result += "     }\t";//method end
+
+            refName = "searchM";
+            result += "     public List<Model."+metaName+"Model>(Model."+metaName+"Model "+refName+")\t";
+            result += "     {\t";//method start
+            result += "         List<Model."+metaName+"Model> result=new List<Model."+metaName+"Model>();\t";
+            result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
+            result += "         result=dal."+procGLName+"("+refName+");\t";
+            result += "         return result;\t";
+            result += "     }\t";//method end
+            result += "}\t";//namespace end
             return result;
         }
 
