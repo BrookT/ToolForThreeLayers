@@ -5,6 +5,7 @@
 //Brook 2013-7-2 16:48 Modify for extension dal
 //Brook 2013-7-3 11:43 Finished for extension bll
 //Brook 2013-7-4 12:11 modify the last , in reference
+//Brook 2013-7-4 13:27 without jspackage,webservice version
 
 using System;
 using System.Collections.Generic;
@@ -262,7 +263,7 @@ namespace workTools
             result += "namespace " + TSQL.getNameSpace(TSQL.projName, "Model") + "\t";
             result += "{\t";//namespace start
             result += "public class " + metaName + "Model \t";
-            result += " {";//class start
+            result += " {\t";//class start
             foreach (DataModel column in ColumnList)
             {
                 result += "     public " + ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + "{    get;set;    }\t";
@@ -483,7 +484,7 @@ namespace workTools
             result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "." + metaName + "DAL();\t";
             result += "           result=dal." + procCName + "(" + InstanceName + ");\t";
             result += "         return result;\t";
-            result += "     }\t";//method end
+            result += "     }\t\t";//method end
 
 
             foreach (DataModel column in ColumnList)
@@ -511,7 +512,7 @@ namespace workTools
             result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
             result += "         result=dal." + procUName + "(" + InstanceName + ");\t";
             result += "         return result;\t";
-            result += "     }\t";//method end
+            result += "     }\t\t";//method end
 
             string refName = "";
             foreach (DataModel column in ColumnList)
@@ -536,7 +537,7 @@ namespace workTools
             result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
             result += "         result=dal." + procGLName + "(" + refName + ");\t";
             result += "         return result;\t";
-            result += "     }\t";//method end
+            result += "     }\t\t";//method end
             result += "}\t";//namespace end
             return result;
         }
@@ -582,15 +583,15 @@ namespace workTools
 
             #region operation
             refList = GetRefList(ColumnList, "ExceptID&Time");
-            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procCName);//create
+            result += CreateWebMethod(ajaxReturnType, refList, returnInstance, procCName);//create
             refList = GetRefList(ColumnList, "OnlyID");
-            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procDName);//delete
-            refList = GetRefList(ColumnList,"All");
-            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procUName); //update
-            refList = GetRefList(ColumnList,"OnlyID");
-            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procRName);//get
+            result += CreateWebMethod(ajaxReturnType, refList, returnInstance, procDName);//delete
+            refList = GetRefList(ColumnList, "All");
+            result += CreateWebMethod(ajaxReturnType, refList, returnInstance, procUName); //update
+            refList = GetRefList(ColumnList, "OnlyID");
+            result += CreateWebMethod(ajaxReturnType, refList, returnInstance, procRName);//get
             refList = GetRefList(ColumnList, "ExceptID&Time");
-            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procGLName) ;//get list
+            result += CreateWebMethod(ajaxReturnType, refList, returnInstance, procGLName);//get list
             #endregion
 
             result += "}\t\t";//namespace end
@@ -606,7 +607,7 @@ namespace workTools
         /// <param name="returnInstance">result instance : 结果实例</param>
         /// <param name="procName">procedure name : 存储过程名</param>
         /// <returns></returns>
-        private string CreateWebMethod(string ajaxReturnType,string refList,string returnInstance,string procName)
+        private string CreateWebMethod(string ajaxReturnType, string refList, string returnInstance, string procName)
         {
             string result = "";
             result += "     [WebMethod]\t";//get
@@ -624,36 +625,36 @@ namespace workTools
             return result;
         }
 
-        private string GetRefList(List<DataModel> ColumnList,string How)
+        private string GetRefList(List<DataModel> ColumnList, string How)
         {
-            string result="";
+            string result = "";
             foreach (DataModel column in ColumnList)
             {
                 switch (How)
                 {
-                    case "All":result+="string"+" "+column.ColumnName+","; break;
+                    case "All": result += "string" + " " + column.ColumnName + ","; break;
                     case "OnlyID":
                         if (column.IsPrimaryKey)
                         {
-                            result += "string" + " " + column.ColumnName+",";
+                            result += "string" + " " + column.ColumnName + ",";
                         }
                         break;
                     case "ExceptID":
                         if (!column.IsPrimaryKey)
                         {
-                            result += "string"+ " " + column.ColumnName + ",";
+                            result += "string" + " " + column.ColumnName + ",";
                         }
                         break;
                     case "ExceptID&Time":
                         if (!column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
                         {
-                            result += "string"+ " " + column.ColumnName + ",";
+                            result += "string" + " " + column.ColumnName + ",";
                         }
                         break;
                     default: result += "string" + " " + column.ColumnName + ","; break;
                 }
             }
-            result=result.Remove(result.LastIndexOf(","),1);//stop at here
+            result = result.Remove(result.LastIndexOf(","), 1);//stop at here
             return result;
         }
 
@@ -817,7 +818,7 @@ namespace workTools
                             result += "@" + column.ColumnName + " " + column.ColumnType + ",\t";
                         }
                     }
-                    result=result.Remove(result.LastIndexOf(","),1);
+                    result = result.Remove(result.LastIndexOf(","), 1);
                     result += "AS\t";
                     result += "BEGIN\t";
                     result += "UPDATE [" + tblName + "] SET \t";
@@ -834,7 +835,7 @@ namespace workTools
                             result += "[" + column.ColumnName + "]=" + column.DefaultValue + ",\t";
                         }
                     }
-                    result= result.Remove(result.LastIndexOf(","),1);
+                    result = result.Remove(result.LastIndexOf(","), 1);
                     result += " WHERE \t";
                     foreach (DataModel column in ColumnList)
                     {
@@ -895,14 +896,18 @@ namespace workTools
             string result = "";
             switch (column.ColumnType)
             {
-                case "int": result = "                   " + InstanceName + "." + column.ColumnName + "=int.parse(sr[\"" + column.ColumnName + "\"].ToString());\t"; break;
-                case "bit": result = "                   " + InstanceName + "." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString()==\"1\"?true:false;\t"; break;
-                case "DateTime": result = "                  " + InstanceName + "." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString();\t"; break;
+                case "int":
+                    result = "                      " + InstanceName + "." + column.ColumnName + "=int.parse(sr[\"" + column.ColumnName + "\"].ToString());\t"; break;
+                case "bit":
+                    result = "                      " + InstanceName + "." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString()==\"1\"?true:false;\t"; break;
+                case "DateTime":
+                    result = "                      " + InstanceName + "." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString();\t"; break;
                 case "NTEXT":
                 case "NVARCHAR(20)":
                 case "NVARCHAR(8)":
                 case "NVARCHAR(255)":
-                case "NVARCHAR(max)": result = "                 " + InstanceName + "." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString();\t"; break;
+                case "NVARCHAR(max)":
+                    result = "                      " + InstanceName + "." + column.ColumnName + "=sr[\"" + column.ColumnName + "\"].ToString();\t"; break;
                 default: break;
             }
             return result;
