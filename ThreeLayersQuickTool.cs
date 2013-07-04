@@ -414,12 +414,12 @@ namespace workTools
             result += "         }\t";//using end
             result += "     return " + InstanceName + ";\t";
             result += "     }\t";//method end
-            
-            result += "     public List<Models."+metaName+"Model> "+procGLName+"(Models."+metaName+"Model "+InstanceName+",int startRowID,int endRowID)\t";//get list
+
+            result += "     public List<Models." + metaName + "Model> " + procGLName + "(Models." + metaName + "Model " + InstanceName + ",int startRowID,int endRowID)\t";//get list
             result += "     {\t";//method start
             resultInstance = "resultL";
-            result += "         List<Models."+metaName+"Model> "+resultInstance+"=new List<Models."+metaName+">();\t";
-            result += "         procName=\""+procGLName+"\";\t";
+            result += "         List<Models." + metaName + "Model> " + resultInstance + "=new List<Models." + metaName + ">();\t";
+            result += "         procName=\"" + procGLName + "\";\t";
             result += "         parameters=new IDataParameter[]{\t";//param start
             columnCount = 0;
             foreach (DataModel column in ColumnList)
@@ -428,7 +428,7 @@ namespace workTools
                 if (!column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
                 {
                     result += "             new SqlParameter(@" + column.ColumnName + "," + column.ColumnName + ")";//param start
-                    if ( !column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
+                    if (!column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
                     {
                         result += ",";
                     }
@@ -441,7 +441,7 @@ namespace workTools
             result += "         SqlHelper sqlhelper=new SqlHelper();\t";
             result += "         using(SqlDataReader sr=sqlhelper.RunProcedure(procName,parameters))\t";
             result += "         {\t";
-            result += "             Models." + metaName + "Model tempM=new Models." + metaName + "Model();\t" ;
+            result += "             Models." + metaName + "Model tempM=new Models." + metaName + "Model();\t";
             foreach (DataModel column in ColumnList)
             {
                 if (TSQL.IsTypeStringable(column.ColumnType))
@@ -450,12 +450,12 @@ namespace workTools
                 }
                 else
                 {
-                    result += "             tempM." + column.ColumnName + "="+ParseSqlTypeIntoCSharpType(column.ColumnType)+".Parse(sr[\""+column.ColumnName+"\"].ToString());\t" ;
+                    result += "             tempM." + column.ColumnName + "=" + ParseSqlTypeIntoCSharpType(column.ColumnType) + ".Parse(sr[\"" + column.ColumnName + "\"].ToString());\t";
                 }
             }
-            result+= "          );\t";//param end
+            result += "          );\t";//param end
             result += "             " + resultInstance + ".Add(tempM);\t";
-            result += "             return "+resultInstance+";\t";
+            result += "             return " + resultInstance + ";\t";
             result += "     }\t";//method end
 
             result += "     }\t";//class end
@@ -472,52 +472,43 @@ namespace workTools
             result += "using System.Text;\t";
             result += "using System.Data;\t";
             result += "using System.Data.SqlClient;\t";
-            result += "using "+getNameSpace(projName,"Model")+"."+metaName+"Model;\t";
-            result += "using "+getNameSpace(projName,"DAL")+"."+metaName+"DAL;\t";
+            result += "using " + getNameSpace(projName, "Model") + "." + metaName + "Model;\t";
+            result += "using " + getNameSpace(projName, "DAL") + "." + metaName + "DAL;\t";
             result += "namespace " + TSQL.getNameSpace(TSQL.projName, "BLL") + "\t";
             result += "{\t";//namespace start
-
-            foreach(DataModel column in ColumnList)
-            {
-                if(column.IsPrimaryKey)
-                {
-                    
-                }
-            }
-
-            result += "     public int "+procCName+"(Models."+metaName+"Model "+InstanceName+")\t";
+            result += "     public int " + procCName + "(Models." + metaName + "Model " + InstanceName + ")\t";
             result += "     {\t";//method start
             result += "         int result=0;\t";
-            result += "         "+getNameSpace(projName,"DAL")+"."+metaName+"DAL dal=new "+getNameSpace(projName,"DAL")+"."+metaName+"DAL();\t";
-            result+="           result=dal."+procCName+"("+InstanceName+");\t";
+            result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "." + metaName + "DAL();\t";
+            result += "           result=dal." + procCName + "(" + InstanceName + ");\t";
             result += "         return result;\t";
             result += "     }\t";//method end
 
-            
-            foreach(DataModel column in ColumnList)
+
+            foreach (DataModel column in ColumnList)
             {
-                if(column.IsPrimaryKey)
+                if (column.IsPrimaryKey)
                 {
-                    result += "     public int "+procDName+"("+column.ColumnType+" "+column.ColumnName+")\t";
+                    result += "     public int " + procDName + "(" + column.ColumnType + " " + column.ColumnName + ")\t";
                 }
             }
 
             result += "     {\t";//method start
             result += "         int result=0;\t";
-            foreach(DataModel column in ColumnList)
+            foreach (DataModel column in ColumnList)
             {
-                if(column.IsPrimaryKey)
+                if (column.IsPrimaryKey)
                 {
-                    result += "         result=dal."+procDName+"("+column.ColumnName+");\t";
+                    result += "         result=dal." + procDName + "(" + column.ColumnName + ");\t";
                 }
             }
             result += "     }\t";//method end
 
-            result += "     public int "+procUName+"(Models."+metaName+"Model "+InstanceName+")\t";
+            result += "     public int " + procUName + "(Models." + metaName + "Model " + InstanceName + ")\t";
             result += "     {\t";//method start
             result += "         int result=0;\t";
-            result += "         "+getNameSpace(projName,"DAL")+"."+metaName+"DAL dal=new "+getNameSpace(projName,"DAL")+"();\t";
-            result += "         result=dal."+procUName+"("+InstanceName+");\t";
+            result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
+            result += "         result=dal." + procUName + "(" + InstanceName + ");\t";
             result += "         return result;\t";
             result += "     }\t";//method end
 
@@ -527,22 +518,22 @@ namespace workTools
                 if (column.IsPrimaryKey)
                 {
                     refName = column.ColumnName;
-                    result += "     public Model." + metaName + "Model " + procRName + "("+ParseSqlTypeIntoCSharpType(column.ColumnType)+" "+column.ColumnName+");\t";
+                    result += "     public Model." + metaName + "Model " + procRName + "(" + ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ");\t";
                 }
             }
             result += "     {\t";//method start
-            result += "         Model."+metaName+"Model result=new Model."+metaName+"Model();\t";
+            result += "         Model." + metaName + "Model result=new Model." + metaName + "Model();\t";
             result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
-            result += "         result=dal."+procRName+"("+refName+");\t";
+            result += "         result=dal." + procRName + "(" + refName + ");\t";
             result += "         return result;\t";
             result += "     }\t";//method end
 
             refName = "searchM";
-            result += "     public List<Model."+metaName+"Model>(Model."+metaName+"Model "+refName+")\t";
+            result += "     public List<Model." + metaName + "Model>(Model." + metaName + "Model " + refName + ")\t";
             result += "     {\t";//method start
-            result += "         List<Model."+metaName+"Model> result=new List<Model."+metaName+"Model>();\t";
+            result += "         List<Model." + metaName + "Model> result=new List<Model." + metaName + "Model>();\t";
             result += "         " + getNameSpace(projName, "DAL") + "." + metaName + "DAL dal=new " + getNameSpace(projName, "DAL") + "();\t";
-            result += "         result=dal."+procGLName+"("+refName+");\t";
+            result += "         result=dal." + procGLName + "(" + refName + ");\t";
             result += "         return result;\t";
             result += "     }\t";//method end
             result += "}\t";//namespace end
@@ -552,6 +543,116 @@ namespace workTools
         public string CreateCSharpWS(List<DataModel> ColumnList)
         {
             string result = "";
+
+            #region using
+            result += "using System;\t";
+            result += "using System.Collections.Generic;\t";
+            result += "using System.Web.Services;\t";
+            result += "using BLL;\t";
+            result += "using BLL.Magazine;\t";
+            result += "using Models;\t";
+            result += "using Models.DataModels;\t";
+            result += "using Utility;\t";
+            result += "using BLL.Member;\t";
+            result += "using System.Web;\t";
+            result += "using Models.Member;\t";
+            result += "using BLL.GoSourcing;\t";
+            result += "using Models.PageModels;\t";
+            result += "using BLL.Banner;\t";
+            result += "using Models.Page;\t";
+            result += "using System.Data;\t";
+            result += "using System.Data.SqlClient;\t";
+            result += "using System.Text.RegularExpressions;\t";
+            result += "using System.Net;\t";
+            result += "using System.Text;\t";
+            result += "using DAL;\t";
+            result += "using RingierTrade.CMSServiceReference;\t";
+            #endregion
+
+            #region attr
+            string ajaxReturnType = "AjaxReturnModel";
+            string refList = "";
+            string returnInstance = "ajaxReturn";
+            int columnCount = 0;
+            #endregion
+
+            result += "namespace RingierTrade.Service\t";
+            result += "{\t";//namespace start
+
+            #region operation
+            refList = GetRefList(ColumnList, "ExceptID");
+            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procCName);//create
+            refList = GetRefList(ColumnList, "OnlyID");
+            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procDName);//delete
+            refList = GetRefList(ColumnList,"All");
+            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procUName); //update
+            refList = GetRefList(ColumnList,"OnlyID");
+            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procRName);//get
+            refList = GetRefList(ColumnList, "ExceptID&Time");
+            result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procGLName) ;//get list
+            #endregion
+
+            result += "}\t";//namespace end
+
+            return result;
+        }
+
+        /// <summary>
+        /// Create WebMethod in WebService
+        /// </summary>
+        /// <param name="ajaxReturnType">Ajax return type : ajax返回类型</param>
+        /// <param name="refList">reference list : 参数列表</param>
+        /// <param name="returnInstance">result instance : 结果实例</param>
+        /// <param name="procName">procedure name : 存储过程名</param>
+        /// <returns></returns>
+        private string CreateWebMethod(string ajaxReturnType,string refList,string returnInstance,string procName)
+        {
+            string result = "";
+            result += "     [WebMethod]\t";//get
+            result += "     public " + ajaxReturnType + " " + procName + "(" + refList + ")\t";
+            result += "     {\t";//method start
+            result += "         " + ajaxReturnType + " " + returnInstance + "=new " + ajaxReturnType + "();\t";
+            result += "         try{\t";//try start
+            result += "         \t";
+            result += "         }\t";//try end
+            result += "         catch(exception e){\t";//catch start
+            result += "             \t";
+            result += "         }\t";//catch end
+            result += "         return " + returnInstance + ";\t";
+            result += "     }\t\t";//method end
+            return result;
+        }
+
+        private string GetRefList(List<DataModel> ColumnList,string How)
+        {
+            string result="";
+            foreach (DataModel column in ColumnList)
+            {
+                switch (How)
+                {
+                    case "All":result+=ParseSqlTypeIntoCSharpType(column.ColumnType)+" "+column.ColumnName+","; break;
+                    case "OnlyID":
+                        if (column.IsPrimaryKey)
+                        {
+                            result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName+",";
+                        }
+                        break;
+                    case "ExceptID":
+                        if (!column.IsPrimaryKey)
+                        {
+                            result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ",";
+                        }
+                        break;
+                    case "ExceptID&Time":
+                        if (!column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
+                        {
+                            result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ",";
+                        }
+                        break;
+                    default: result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ","; break;
+                }
+            }
+            result.Remove(result.LastIndexOf(',')-1,1);//stop at here
             return result;
         }
 
@@ -737,7 +838,7 @@ namespace workTools
                         {
                             result += "[" + column.ColumnName + "]=" + column.DefaultValue + "";
                         }
-                        if (columnCount != ColumnList.Count && !column.IsPrimaryKey&&!column.IsCreateTime)
+                        if (columnCount != ColumnList.Count && !column.IsPrimaryKey && !column.IsCreateTime)
                         {
                             result += ",";
                         }
