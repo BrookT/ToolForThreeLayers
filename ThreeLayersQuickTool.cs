@@ -4,6 +4,7 @@
 //Brook 2013-7-1 17:29 Modify for extension dal 
 //Brook 2013-7-2 16:48 Modify for extension dal
 //Brook 2013-7-3 11:43 Finished for extension bll
+//Brook 2013-7-4 12:11 modify the last , in reference
 
 using System;
 using System.Collections.Generic;
@@ -580,7 +581,7 @@ namespace workTools
             result += "{\t";//namespace start
 
             #region operation
-            refList = GetRefList(ColumnList, "ExceptID");
+            refList = GetRefList(ColumnList, "ExceptID&Time");
             result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procCName);//create
             refList = GetRefList(ColumnList, "OnlyID");
             result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procDName);//delete
@@ -592,7 +593,7 @@ namespace workTools
             result += CreateWebMethod(ajaxReturnType,refList,returnInstance,procGLName) ;//get list
             #endregion
 
-            result += "}\t";//namespace end
+            result += "}\t\t";//namespace end
 
             return result;
         }
@@ -630,29 +631,29 @@ namespace workTools
             {
                 switch (How)
                 {
-                    case "All":result+=ParseSqlTypeIntoCSharpType(column.ColumnType)+" "+column.ColumnName+","; break;
+                    case "All":result+="string"+" "+column.ColumnName+","; break;
                     case "OnlyID":
                         if (column.IsPrimaryKey)
                         {
-                            result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName+",";
+                            result += "string" + " " + column.ColumnName+",";
                         }
                         break;
                     case "ExceptID":
                         if (!column.IsPrimaryKey)
                         {
-                            result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ",";
+                            result += "string"+ " " + column.ColumnName + ",";
                         }
                         break;
                     case "ExceptID&Time":
                         if (!column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
                         {
-                            result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ",";
+                            result += "string"+ " " + column.ColumnName + ",";
                         }
                         break;
-                    default: result += ParseSqlTypeIntoCSharpType(column.ColumnType) + " " + column.ColumnName + ","; break;
+                    default: result += "string" + " " + column.ColumnName + ","; break;
                 }
             }
-            result.Remove(result.LastIndexOf(',')-1,1);//stop at here
+            result=result.Remove(result.LastIndexOf(","),1);//stop at here
             return result;
         }
 
@@ -670,18 +671,14 @@ namespace workTools
                         columnCount++;
                         if (column.IsPrimaryKey)
                         {
-                            result += "@sys_id int out ";
+                            result += "@sys_id int out ,\t";
                         }
                         else
                         {
-                            result += "@" + column.ColumnName + " " + column.ColumnType + " ";
+                            result += "@" + column.ColumnName + " " + column.ColumnType + " ,\t";
                         }
-                        if (columnCount != ColumnList.Count)
-                        {
-                            result += ",";
-                        }
-                        result += "\t";
                     }
+                    result = result.Remove(result.LastIndexOf(","), 1);
                     result += "AS\t";
                     result += "BEGIN\t";
                     result += "INSERT INTO [" + tblName + "] (";
@@ -815,14 +812,12 @@ namespace workTools
                     columnCount = 0;
                     foreach (DataModel column in ColumnList)
                     {
-                        columnCount++;
-                        result += "@" + column.ColumnName + " " + column.ColumnType + "";
-                        if (columnCount == ColumnList.Count)
+                        if (!column.IsPrimaryKey && !column.IsCreateTime && !column.IsUpdateTime)
                         {
-                            result += ",";
+                            result += "@" + column.ColumnName + " " + column.ColumnType + ",\t";
                         }
-                        result += "\t";
                     }
+                    result=result.Remove(result.LastIndexOf(","),1);
                     result += "AS\t";
                     result += "BEGIN\t";
                     result += "UPDATE [" + tblName + "] SET \t";
@@ -832,18 +827,14 @@ namespace workTools
                         columnCount++;
                         if (!column.IsPrimaryKey && !column.IsUpdateTime && !column.IsCreateTime)
                         {
-                            result += "[" + column.ColumnName + "]=@" + column.ColumnName + "";
+                            result += "[" + column.ColumnName + "]=@" + column.ColumnName + ",\t";
                         }
                         else if (column.IsUpdateTime)
                         {
-                            result += "[" + column.ColumnName + "]=" + column.DefaultValue + "";
+                            result += "[" + column.ColumnName + "]=" + column.DefaultValue + ",\t";
                         }
-                        if (columnCount != ColumnList.Count && !column.IsPrimaryKey && !column.IsCreateTime)
-                        {
-                            result += ",";
-                        }
-                        result += "\t";
                     }
+                    result= result.Remove(result.LastIndexOf(","),1);
                     result += " WHERE \t";
                     foreach (DataModel column in ColumnList)
                     {
